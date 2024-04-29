@@ -7,6 +7,10 @@
 #                                                                      
 #  28-Feb-2022: Add partial trace option to op_trace
 #
+#  ??-Apr-2024: Add support for arbitrary local dimension d
+#
+#  29-Apr-2024: Add op_to_Pauli and Pauli_to_op
+#
 ########################################################################
 
 """
@@ -32,7 +36,7 @@
 import numpy as np
 
 from numpy.linalg import norm as npnorm
-from numpy import sqrt, conj, tensordot, array, eye
+from numpy import sqrt, conj, tensordot, array, eye, zeros
 
 #
 # The following are some common 1-qubit matrices that are often used
@@ -48,6 +52,86 @@ ketbra01 = array([[0,1],[0,0]])
 
 H = array([[1,1],[1,-1]])/sqrt(2)
 
+U_op_to_Pauli = zeros([2,2,4], dtype=np.complex128)
+U_op_to_Pauli[:,:,0] = ID1.copy()
+U_op_to_Pauli[:,:,1] = sigma_X.copy()
+U_op_to_Pauli[:,:,2] = sigma_Y.copy()
+U_op_to_Pauli[:,:,3] = sigma_Z.copy()
+U_op_to_Pauli = conj(U_op_to_Pauli)/2
+
+U_Pauli_to_op = zeros([2,2,4], dtype=np.complex128)
+
+U_Pauli_to_op[:,:,0] = ID1.copy()
+U_Pauli_to_op[:,:,1] = sigma_X.copy()
+U_Pauli_to_op[:,:,2] = sigma_Y.copy()
+U_Pauli_to_op[:,:,3] = sigma_Z.copy()
+
+
+
+#
+# -------------------------  op_to_Pauli  -----------------------------
+#
+
+def op_to_Pauli(op):
+	
+	"""
+	
+	Takes a multiqubit operator, and moves it to a Pauli representation,
+	i.e., to a tensor C_{a_1, ..., a_n} such that
+	
+	op = \sum_{a_1, ..., a_n} C_{a_1, ..., a_n} P_{a_1}\otimes ... P_{a_n}
+	 
+	Note1: the local dimension of op must be 2 (i.e., acting on qubits)
+	
+	Note2: We assume that op is an *Hermitian* operator, and therefore
+	       we make the output C_{a_1,...,a_n} explicitly real.
+	
+	"""
+
+	d = op.shape[0]
+	if d !=2:
+		print("\n")
+		print("TenQI.op_to_Pauli error!")
+		print(f"Local operator dimension must be 2 but given d={d}\n")
+		exit(1)
+
+	n = len(op.shape)//2
+
+	op_Pauli = op
+
+	for i in range(n):
+		op_Pauli = tensordot(U_op_to_Pauli, op_Pauli,  axes=([0,1],[i,i+1]))
+
+	return op_Pauli.real
+
+#
+# -------------------------  Pauli_to_op  -----------------------------
+#
+
+def Pauli_to_op(op_Pauli):
+	
+	"""
+	
+	Takes operator in the Pauli representation and output it as a
+	multiqubit operator
+	
+	In the Pauli representation, the operator is given in terms of 
+	a tensor C_{a_1,...,a_n} such that
+	
+	op = \sum_{a_1, ..., a_n} C_{a_1, ..., a_n} P_{a_1}\otimes ... P_{a_n}
+	
+	
+	"""
+
+	n = len(op_Pauli.shape)
+
+	op = op_Pauli
+
+	for i in range(n):
+		op = tensordot(U_Pauli_to_op, op,  axes=([2],[2*i]))
+
+	return op
+	
 
 #
 #-------------------   op_to_mat   ------------------------------
