@@ -11,9 +11,12 @@
 #
 #  29-Apr-2024: Add op_to_Pauli and Pauli_to_op
 #
+#  20-Jul-2024: Use r""" in comment string to avoid escape sequence
+#               warnnings
+#
 ########################################################################
 
-"""
+r"""
 
    In the TenQI framework, an operator over n qubits is 
    described by a tensor with 2n legs:
@@ -74,7 +77,7 @@ U_Pauli_to_op[:,:,3] = sigma_Z.copy()
 
 def op_to_Pauli(op):
 	
-	"""
+	r"""
 	
 	Takes a multiqubit operator, and moves it to a Pauli representation,
 	i.e., to a tensor C_{a_1, ..., a_n} such that
@@ -110,7 +113,7 @@ def op_to_Pauli(op):
 
 def Pauli_to_op(op_Pauli):
 	
-	"""
+	r"""
 	
 	Takes operator in the Pauli representation and output it as a
 	multiqubit operator
@@ -140,7 +143,7 @@ def Pauli_to_op(op_Pauli):
 
 def op_to_mat(op):
 	
-	"""
+	r"""
 		maps an n-qubits operator in the tensor representation
 		to a 2^n\times 2^n matrix
 		
@@ -184,7 +187,7 @@ def op_to_mat(op):
 #
 
 def mat_to_op(mat, d=2):
-	"""
+	r"""
 		maps a 2^n\times 2^n matrix to a n-qubits operator in the 
 		tensor representation.
 		
@@ -230,7 +233,7 @@ def mat_to_op(mat, d=2):
 #
 
 def op_dagger(op):
-	"""
+	r"""
 	
 		Calculates the Hermitian dagger of a n-qubits operator in the
 		tensor representation:
@@ -263,7 +266,7 @@ def op_dagger(op):
 #
 
 def op_norm(op, ntype='op'):
-	"""
+	r"""
 		Calculates one of several norms of an n-qubit operator. 
 		
 		Input Parameters:
@@ -313,7 +316,7 @@ def op_norm(op, ntype='op'):
 
 def op_trace(op, qubits=None):
 	
-	"""
+	r"""
 		Returns the trace of an n-qubits operator in the tensorial 
 		representation.
 		
@@ -352,7 +355,7 @@ def op_trace(op, qubits=None):
 
 def op_times_op(A, B, f=0):
 	
-	"""
+	r"""
 		
 		Multiplies an n-qubits operator A by an m-qubits operator B:
 		
@@ -416,7 +419,7 @@ def op_times_op(A, B, f=0):
 		
 		C = tensordot(A,B, axes=(A_legs,B_legs))
 		
-		"""        
+		r"""        
 		
 		A[i_0,j_0;...;i_f,j_f,...,i_{n-1};j_{n-1}] * B[j_f,k_f;...;j_{f+m-1},k_{f+m-1}]
 		
@@ -462,7 +465,7 @@ def op_times_op(A, B, f=0):
 		
 		C = tensordot(A,B, axes=(A_legs,B_legs))
 		
-		"""
+		r"""
 		A[i_f,j_f,...,i_n,j_n] * B[j_0,k_0;...j_{f-1},k_{f-1}; i_f,j_f,...,j_{f+n-1},k_{f+n-1},...]
 		
 		"""
